@@ -20,6 +20,23 @@ const createMaster = async (req, res) => {
   }
 };
 
+
+const getAllMasters = async (req, res) => {
+    try {
+      const result = await masterService.getAllMasters();
+      res.status(200).json({
+        message: 'Cuentas MASTER listadas exitosamente',
+        status: true,
+        data: result,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: `Error: ${error.message}`,
+        status: false,
+      });
+    }
+  };
 module.exports = {
   createMaster,
+  getAllMasters
 };
