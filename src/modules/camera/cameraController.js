@@ -1,4 +1,5 @@
 const cameraService = require('./cameraService');
+const CameraCountModel = require('./models/CameraCountModel');
 
 const getCamerasByDateRange = async (req, res) => {
   const { fromDate, toDate } = req.body;
@@ -30,28 +31,36 @@ const getCamerasByDateRange = async (req, res) => {
 
 
 const createCameraCount = async (req, res) => {
-  const { vehicle_id, door, count, dateCount } = req.body;
-
   try {
-    const result = await cameraService.createCameraCount(vehicle_id, door, count, dateCount);
+    const cameraCount = new CameraCountModel(req.body);
+    
+    // Validar los datos
+    cameraCount.validate();
+  
+    const result = await cameraService.createCameraCount(cameraCount.vehicle_id, cameraCount.door, cameraCount.count, cameraCount.dateCount);
     res.status(200).json({
       message: 'Conteo de cámara creado exitosamente',
       status: true,
       data: result,
     });
   } catch (error) {
-    res.status(500).json({
-      message: 'Error en el servidor',
+    res.status(400).json({
+      message: `Error: ${error.message}`,
       status: false,
-      error: error.message,
     });
   }
 };
 
 const createCameraCountsBulk = async (req, res) => {
-  const cameraCountsList = req.body; // Se espera un array de objetos con {vehicle_id, door, count, dateCount}
-
+  const cameraCountsList = req.body; 
   try {
+    
+    cameraCountsList.forEach(data => {
+      const cameraCount = new CameraCountModel(data);
+      cameraCount.validate(); 
+    });
+
+   
     const result = await cameraService.createCameraCountsBulk(cameraCountsList);
     res.status(200).json({
       message: 'Conteos de cámaras creados exitosamente',
@@ -59,13 +68,13 @@ const createCameraCountsBulk = async (req, res) => {
       data: result,
     });
   } catch (error) {
-    res.status(500).json({
-      message: 'Error en el servidor',
+    res.status(400).json({
+      message: `Error de validación o en el servidor: ${error.message}`,
       status: false,
-      error: error.message,
     });
   }
 };
+
 module.exports = {
   getCamerasByDateRange,
   createCameraCount,

@@ -1,24 +1,24 @@
+const BussinesModel = require('./models/BussinesModel');
 const bussinesService = require('./bussinesService');
 
 const createBussines = async (req, res) => {
-    const { ruc , name , direction } = req.body;
-  
-    try {
-      const result = await bussinesService.createBussines( ruc , name , direction);
-      res.status(200).json({
-        message: 'Empresas creada exitosamente',
-        status: true,
-        data: result,
-      });
-    } catch (error) {
-      res.status(500).json({
-        message: 'Error en el servidor',
-        status: false,
-        error: error.message,
-      });
-    }
-  };
+  try {
+    const bussines = new BussinesModel(req.body);
+    bussines.validate();  // Validar los datos
 
+    const result = await bussinesService.createBussines(bussines.ruc, bussines.name, bussines.direction);
+    res.status(200).json({
+      message: 'Empresa creada exitosamente',
+      status: true,
+      data: result,
+    });
+  } catch (error) {
+    res.status(400).json({
+      message: `Error: ${error.message}`,
+      status: false,
+    });
+  }
+};
 
 const getAllBussines = async (req, res) => {
   try {
@@ -37,11 +37,14 @@ const getAllBussines = async (req, res) => {
   }
 };
 
-
 const createBussinesBulk = async (req, res) => {
-  const bussinesList = req.body; // Se espera un array de objetos con {ruc, name, direction}
-
   try {
+    const bussinesList = req.body.map(data => {
+      const bussines = new BussinesModel(data);
+      bussines.validate();  // Validar cada empresa
+      return bussines;
+    });
+
     const result = await bussinesService.createBussinesBulk(bussinesList);
     res.status(200).json({
       message: 'Empresas creadas exitosamente',
@@ -49,17 +52,15 @@ const createBussinesBulk = async (req, res) => {
       data: result,
     });
   } catch (error) {
-    res.status(500).json({
-      message: 'Error en el servidor',
+    res.status(400).json({
+      message: `Error de validación o en el servidor: ${error.message}`,
       status: false,
-      error: error.message,
     });
   }
 };
 
-
-  module.exports= {
-    getAllBussines,
-    createBussines,
-    createBussinesBulk
-}
+module.exports = {
+  getAllBussines,
+  createBussines,
+  createBussinesBulk
+};
