@@ -1,34 +1,17 @@
 const db = require('../../config/db');
 const generateToken = require('./jwt/generateToken');
 
-const authenticateUser = async (username, password) => {
-  // Asegurarse de que los valores se impriman en el orden correcto
-  console.log('Valores recibidos - Username:', username, 'Password:', password);
+const authenticateUser = async (password, username) => {
 
   const connection = await db.getConnection();
   try {
-    // Construir manualmente la consulta para imprimirla
-    const sqlQuery = `
-      SELECT 
-        u.user_id, 
-        u.bussines_id, 
-        u.username, 
-        b.name as bussines_name, 
-        b.ruc, 
-        b.id as bussines_id 
-      FROM tb_user u 
-      JOIN tb_bussines b ON u.bussines_id = b.id 
-      WHERE u.username = '${username}' AND u.password = '${password}'
-    `;
-    
-    console.log('Consulta SQL:', sqlQuery);
-
     // Ejecutar la consulta con parámetros
     const [rows] = await connection.execute(
       `SELECT 
          u.user_id, 
          u.bussines_id, 
-         u.username, 
+         u.username,
+         u.role,  
          b.name as bussines_name, 
          b.ruc, 
          b.id as bussines_id 
@@ -43,11 +26,12 @@ const authenticateUser = async (username, password) => {
     }
 
     const user = rows[0];
-    const token = generateToken(user);
+    const token = generateToken(user);  // El token ahora incluirá el rol del usuario
 
     const userResponse = {
       user_id: user.user_id,
       username: user.username,
+      role: user.role,  // Incluye el rol en la respuesta
       bussines: {
         bussines_id: user.bussines_id,
         name: user.bussines_name,

@@ -1,12 +1,13 @@
 const UserModel = require('./models/UserModel');
+const { use } = require('./userRoutes');
 const userService = require('./userService');
 
 const authenticateUser = async (req, res) => {
   try {
     const user = new UserModel(req.body);
     user.validate();  // Validar los datos
-
-    const result = await userService.authenticateUser(user.username, user.password);
+    
+    const result = await userService.authenticateUser(user.password, user.username);
     res.status(200).json({
       message: 'Autenticación exitosa',
       status: true,

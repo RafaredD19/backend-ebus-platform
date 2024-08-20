@@ -1,4 +1,3 @@
-// src/modules/user/jwt/generateToken.js
 const jwt = require('jsonwebtoken');
 
 const generateToken = (user) => {
@@ -6,10 +5,10 @@ const generateToken = (user) => {
     user_id: user.user_id,
     username: user.username,
     role: user.role,
-    bussines_id: user.bussines_id,
+    bussines_id: user.bussines_id
   };
 
-  const token = jwt.sign(payload, 'ohhhMeVengooooo', { expiresIn: '24h' });
+  const token = jwt.sign(payload, 'your_secret_key', { expiresIn: '1h' });
   return token;
 };
 
