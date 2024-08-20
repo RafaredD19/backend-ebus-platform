@@ -1,5 +1,5 @@
 const UserModel = require('./models/UserModel');
-const { use } = require('./userRoutes');
+
 const userService = require('./userService');
 
 const authenticateUser = async (req, res) => {

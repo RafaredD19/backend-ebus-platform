@@ -6,7 +6,7 @@ const createCompany = async (req, res) => {
     const company = new CompanyModel(req.body);
     company.validate();  // Validar los datos
 
-    const userId = req.user.user_id;  // Obtener el user_id del token JWT
+    const userId = req.user.user_id; 
     console.log(userId)
     const result = await companiesService.createCompany(company.username, company.password, company.nameCompany, userId);
     res.status(200).json({

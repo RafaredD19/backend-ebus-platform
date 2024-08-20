@@ -8,8 +8,8 @@ const generateToken = (user) => {
     bussines_id: user.bussines_id
   };
 
-  const token = jwt.sign(payload, 'your_secret_key', { expiresIn: '1h' });
+  const token = jwt.sign(payload, 'your_secret_key', { expiresIn: '24h' });
   return token;
 };
 
-module.exports = generateToken;
+module.exports =generateToken;
